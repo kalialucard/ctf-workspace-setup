@@ -28,7 +28,6 @@ Instead of manually creating directories and editing `/etc/hosts` every time you
 ### 1. Create the Script
 Create a file named `thm.sh` in your home directory:
 
-```bash
 nano ~/thm.sh
 
 

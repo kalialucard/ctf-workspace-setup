@@ -1,75 +1,64 @@
-# 🚀 THM Workspace Automator
+# THM Workspace Automator 🚀
 
-A streamlined automation script for Kali Linux designed to speed up the setup process for TryHackMe (THM) rooms.
+> One command to set up a TryHackMe room workspace on Kali Linux — directories, `/etc/hosts`, and a fresh terminal, automatically.
 
-Instead of manually creating directories and editing `/etc/hosts` every time you start a new machine, this script does it all in one command—and then drops you directly into a new terminal window inside your workspace.
+[![Shell](https://img.shields.io/badge/shell-bash-green?logo=gnu-bash)](https://www.gnu.org/software/bash/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Kali%20Linux-557C94?logo=kalilinux)](https://www.kali.org/)
 
-## ✨ Features
+## What It Does
 
-* **Smart Directory Creation:** Automatically creates a workspace directory in `~/tryhackme/`.
-    * Converts names to **lowercase**.
-    * Removes **spaces** (e.g., "Hacking Fun" -> `hackingfun`).
-* **Automated DNS:** Adds the room IP to `/etc/hosts`.
-    * Generates a short hostname based on the first letter (e.g., `h.thm`).
-    * **Clean Injection:** Inserts the IP *above* the IPv6 section (`::1`) to keep your hosts file organized.
-    * **No Duplicates:** Automatically removes old entries for the same hostname before adding the new one.
-* **Seamless Transition:**
-    * Opens a new `qterminal` window directly in the new folder.
-    * **Auto-Close:** Immediately kills the original terminal window to keep your desktop clean.
+Every time you start a TryHackMe machine you repeat the same steps: create a folder, add the IP to `/etc/hosts`, open a terminal in that folder. `thm.sh` does all three in one command and closes the launcher terminal to keep your desktop clean.
 
-## 📋 Prerequisites
+| Step | What happens |
+|------|-------------|
+| **Directory** | Creates `~/tryhackme/<roomname>/` (lowercase, no spaces) |
+| **DNS** | Adds `<IP>  <h>.thm` to `/etc/hosts` above the IPv6 block |
+| **Dedup** | Removes any existing entry for the same hostname before adding |
+| **Terminal** | Spawns a new `qterminal` window inside the workspace and closes the current one |
 
-* **OS:** Kali Linux (or any distro using Zsh).
-* **Terminal:** `qterminal` (Default in modern Kali XFCE).
-* **Shell:** Zsh.
+## Screenshot
 
-## 🛠️ Installation
+<!-- TODO: add a terminal screenshot of `thm "Mr Robot" 10.10.10.10` running here -->
+![THM Automator](docs/screenshot.png)
 
-### 1. Create the Script
-Create a file named `thm.sh` in your home directory:
+## Prerequisites
 
-nano ~/thm.sh
+- Kali Linux (or any Debian-based distro)
+- `qterminal` installed (`sudo apt install qterminal`)
+- `sudo` privileges (for `/etc/hosts` writes)
 
+## Installation
 
-Configure the Alias (Crucial!)
+```bash
+git clone https://github.com/kalialucard/ctf-workspace-setup.git
+cd ctf-workspace-setup
 
-For the Auto-Close feature to work, the script must be run using source so it can access the parent process ID.
+chmod +x thm.sh
+sudo cp thm.sh /usr/local/bin/thm
+```
 
-    Open your Zsh config:
-    Bash
+## Usage
 
-nano ~/.zshrc
+```bash
+thm "<Room Name>" <Machine-IP>
 
-Add this line to the bottom:
-Bash
-
-alias thm='source /home/kali/thm.sh'
-
-Save and reload:
-Bash
-
-    source ~/.zshrc
-
-🚀 Usage
-
-Run the command followed by the Machine IP and the Room Name.
-Bash
-
-thm <IP_ADDRESS> <ROOM_NAME>
-
-Example
-
-You start a room called "Hacking Fun" with IP 10.10.20.5.
-Bash
-
-thm 10.10.20.5 "Hacking Fun"
+# Examples:
+thm "Mr Robot CTF" 10.10.10.10
+thm "Blue" 10.10.189.44
+thm "Agent Sudo" 10.10.1.1
+```
 
 What happens:
+1. `~/tryhackme/mrrobotctf/` is created
+2. `10.10.10.10  m.thm` is added to `/etc/hosts`
+3. A new `qterminal` opens in `~/tryhackme/mrrobotctf/`
+4. The original terminal closes
 
-    You are prompted for sudo password (to edit /etc/hosts).
+## Customisation
 
-    Directory created: /home/kali/tryhackme/hackingfun/.
+Edit `thm.sh` to change the base directory (`~/tryhackme/`), terminal emulator, or hostname suffix (`.thm`).
 
-    Host entry added: 10.10.20.5 h.thm (placed neatly above IPv6 lines).
+## License
 
-    Magic: Your current terminal vanishes, and a new one opens ready to go inside the hackingfun folder.
+[MIT](LICENSE) © kalialucard
